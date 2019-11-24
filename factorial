@@ -1,0 +1,30 @@
+<html>
+<head>
+<script type="text/javascript">
+
+var y,a;
+
+function test()
+{
+var fact=1;
+var y=document.f1.fname.value
+a=parseInt(y)
+for(i=1;i<=y;i++)
+	{
+	fact=fact*i
+	}
+document.write("Factorial of "+y+"="+fact)
+}
+
+</script>
+</head>
+<body>
+
+<form name=f1 method="post">
+Enter a value:
+<input type="text" id="fname" >
+<input type=button value="click" onclick=test()>
+</form>
+
+</body>
+</html>
