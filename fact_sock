@@ -1,0 +1,80 @@
+server
+
+import java.net.*;
+import java.io.*;
+
+class FactorialServer
+{
+public static void main(String arg[])
+{
+try
+{
+System.out.println("Waiting for Client.....");
+ServerSocket serv=new ServerSocket(3000);
+Socket sc=serv.accept();
+System.out.println("Server Ready....");
+
+BufferedReader br=new BufferedReader(new InputStreamReader(sc.getInputStream()));
+String number=br.readLine();
+
+System.out.println("Received Number From Client : " +number);
+int num=Integer.parseInt(number);
+System.out.println("Counting Factorial ...");
+int fact= calculateFactorial(num);  
+System.out.println("Send Factorial Value of Number to Client");  
+
+PrintStream pw=new PrintStream(sc.getOutputStream(),true);
+pw.println(String.valueOf(fact));
+sc.close();
+serv.close();
+}
+
+catch(Exception e)
+{
+e.printStackTrace();
+}
+}
+
+static int calculateFactorial(int number)
+{
+if(number==1)
+ return 1;
+else
+ return number*calculateFactorial(number-1);
+}
+}
+
+
+
+client
+
+import java.net.*;
+import java.io.*;
+
+class FactorialClient
+{
+public static void main(String arg[])
+{
+try
+{
+System.out.println("Client Started.....");
+Socket clisc=new Socket("localhost",3000);
+
+BufferedReader ui=new BufferedReader(new InputStreamReader(System.in));
+System.out.println("Enter a number :");
+String number=ui.readLine();
+
+PrintStream pwc=new PrintStream(clisc.getOutputStream(),true);
+pwc.println(number);
+System.out.println("Send Number To Server...");
+
+BufferedReader brin=new BufferedReader(new InputStreamReader(clisc.getInputStream()));
+String sts=brin.readLine();
+System.out.println("Received Factorial Value From Server.....");
+System.out.println("Factorial Of " + number + " is : " + Integer.parseInt(sts));
+clisc.close();
+
+}
+catch(Exception e){}
+}
+}
