@@ -1,0 +1,265 @@
+DAY 3 – Socket Programming
+
+Q1) Demonstrate TCP communication using basic Server – Client model.
+
+A)
+Basic Client:
+
+import java.net.*;
+import java.io.*;
+
+class BasicClient
+{
+public static void main(String arg[])
+{
+try
+{
+Socket clisc=new Socket("localhost",3000);
+
+System.out.println("*****Find Server******");
+}
+catch(Exception e){}
+}
+}
+
+Basic Server:
+
+import java.net.*;
+import java.io.*;
+
+class BasicServer
+{
+public static void main(String arg[])
+{
+try
+{
+ServerSocket serv=new ServerSocket(3000);
+System.out.println("Waiting for Client.....");
+Socket sc=serv.accept();
+}
+catch(Exception e){}
+}
+}
+
+
+
+
+Q2) Demonstrate bi-directional TCP communication.
+
+A)
+Client:
+
+import java.io.*;
+import java.net.*;
+public class MultiClient
+{
+  public static void main(String[] args) throws Exception
+  {
+     Socket sock = new Socket("127.0.0.1", 3000);
+                               // reading from keyboard (keyRead object)
+     BufferedReader keyRead = new BufferedReader(new InputStreamReader(System.in));
+                              // sending to client (pwrite object)
+     OutputStream ostream = sock.getOutputStream(); 
+     PrintWriter pwrite = new PrintWriter(ostream, true);
+
+                              // receiving from server ( receiveRead  object)
+     InputStream istream = sock.getInputStream();
+     BufferedReader receiveRead = new BufferedReader(new InputStreamReader(istream));
+
+     System.out.println("Start the Chat, type and press Enter key");
+
+     String receiveMessage, sendMessage;               
+     while(true)
+     {
+        sendMessage = keyRead.readLine();  // keyboard reading
+        pwrite.println(sendMessage);       // sending to server
+        pwrite.flush();                    // flush the data
+        if((receiveMessage = receiveRead.readLine()) != null) //receive from server
+        {
+            System.out.println(receiveMessage); // displaying at DOS prompt
+        }         
+      }               
+    }                    
+}                        
+
+Server:
+
+import java.io.*;
+import java.net.*;
+public class MultiServer
+{
+  public static void main(String[] args) throws Exception
+  {
+      ServerSocket sersock = new ServerSocket(3000);
+      System.out.println("Server Ready !!");
+      Socket sock = sersock.accept( );                          
+                              // reading from keyboard (keyRead object)
+      BufferedReader keyRead = new BufferedReader(new InputStreamReader(System.in));
+	                      // sending to client (pwrite object)
+      OutputStream ostream = sock.getOutputStream(); 
+      PrintWriter pwrite = new PrintWriter(ostream, true);
+
+                              // receiving from server ( receiveRead  object)
+      InputStream istream = sock.getInputStream();
+      BufferedReader receiveRead = new BufferedReader(new InputStreamReader(istream));
+
+      String receiveMessage, sendMessage;               
+      while(true)
+      {
+        if((receiveMessage = receiveRead.readLine()) != null)  
+        {
+           System.out.println(receiveMessage);         
+        }         
+        sendMessage = keyRead.readLine(); 
+        pwrite.println(sendMessage);             
+        pwrite.flush();
+      }               
+    }                    
+}                        
+
+Q3) Demonstrate UDP communication using basic Server – Client model.
+
+A)
+Client:
+
+import java.net.*;
+import java.io.*;
+
+class Udpclient
+{
+public static void main(String args[]) throws Exception
+{
+DatagramSocket ds=new DatagramSocket();
+
+byte[] b="This is udp client".getBytes();
+int port=2000;
+InetAddress ip=InetAddress.getByName("localhost");
+
+DatagramPacket dp=new DatagramPacket(b,b.length,ip,port);
+ds.send(dp);
+}
+}
+
+Server:
+
+import java.net.*;
+import java.io.*;
+
+class Udpserver
+{
+public static void main(String args[]) throws Exception
+{
+DatagramSocket ds=new DatagramSocket(2000);
+
+byte[] b=new byte[100];
+
+
+DatagramPacket dp=new DatagramPacket(b,b.length);
+
+ds.receive(dp);
+
+String str=new String(b);
+
+System.out.println("Received --->"+str);
+}
+}
+
+Q4) Demonstrate bi-directional UDP communication.
+
+A)
+Client:
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+
+public class Client {
+    
+    public static void main(String[] args) throws SocketException, IOException {
+        
+         BufferedReader clientRead =new BufferedReader(new InputStreamReader(System.in));
+      
+      InetAddress IP = InetAddress.getByName("127.0.0.1");
+
+      DatagramSocket clientSocket = new DatagramSocket();
+      while(true)    //true
+      {
+      byte[] sendbuffer = new byte[1024];
+      byte[] receivebuffer = new byte[1024];
+      
+      System.out.print("\nClient: ");
+      String clientData = clientRead.readLine();
+      sendbuffer = clientData.getBytes();        
+      DatagramPacket sendPacket =
+      new DatagramPacket(sendbuffer, sendbuffer.length, IP, 9876);
+      clientSocket.send(sendPacket);
+      if(clientData.equalsIgnoreCase("bye"))
+      {
+          System.out.println("Connection ended by client");
+          break;
+      }
+      DatagramPacket receivePacket =
+      new DatagramPacket(receivebuffer, receivebuffer.length);
+      clientSocket.receive(receivePacket);
+      String serverData = new String(receivePacket.getData());
+      System.out.print("\nServer: " + serverData);
+      
+      }
+      clientSocket.close();
+    }
+    
+}
+
+Server:
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+
+
+public class Server {
+
+   
+    public static void main(String[] args) throws SocketException, IOException {
+        
+         DatagramSocket serverSocket = new DatagramSocket(9876);
+         boolean bye=false;
+
+      while(true) 
+        {
+          byte[] receivebuffer = new byte[1024];
+          byte[] sendbuffer  = new byte[1024];
+          DatagramPacket recvdpkt = new DatagramPacket(receivebuffer, receivebuffer.length);
+          serverSocket.receive(recvdpkt);
+          InetAddress IP = recvdpkt.getAddress();
+          int portno = recvdpkt.getPort();
+          String clientdata = new String(recvdpkt.getData());
+          System.out.println("\nClient : "+ clientdata);
+          System.out.print("\nServer : ");
+          BufferedReader serverRead = new BufferedReader(new InputStreamReader (System.in) );
+          String serverdata = serverRead.readLine();
+          
+          sendbuffer = serverdata.getBytes();
+          DatagramPacket sendPacket = new DatagramPacket(sendbuffer, sendbuffer.length, IP,portno);
+          serverSocket.send(sendPacket); 
+         
+          if(serverdata.equalsIgnoreCase("bye"))
+          {
+              System.out.println("connection ended by server");
+              break;
+          }
+          
+          
+      }
+        serverSocket.close();
+    }
+            
+    }
