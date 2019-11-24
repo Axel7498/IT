@@ -1,0 +1,195 @@
+DAY 5 – Java Applet
+
+Q1) Write a Java program to display clock using Applet.
+
+A)
+import java.applet.*;  
+import java.awt.*;  
+import java.util.*;  
+import java.text.*;  
+  
+public class DigitalClock extends Applet implements Runnable {  
+  
+   Thread t = null;  
+   int hours=0, minutes=0, seconds=0;  
+   String timeString = "";  
+  
+   public void init() {  
+      setBackground( Color.green);  
+   }  
+  
+   public void start() {  
+        t = new Thread( this );  
+        t.start();  
+   }  
+  
+    
+   public void run() {  
+      try {  
+         while (true) {  
+  
+            Calendar cal = Calendar.getInstance();  
+            hours = cal.get( Calendar.HOUR_OF_DAY );  
+            if ( hours > 12 ) hours -= 12;  
+            minutes = cal.get( Calendar.MINUTE );  
+            seconds = cal.get( Calendar.SECOND );  
+  
+            SimpleDateFormat formatter = new SimpleDateFormat("hh:mm:ss");  
+            Date date = cal.getTime();  
+            timeString = formatter.format( date );  
+  
+            repaint();  
+            t.sleep( 1000 );  // interval given in milliseconds  
+         }  
+      }  
+      catch (Exception e) { }  
+   }  
+  
+    
+  public void paint( Graphics g ) {  
+      g.setColor( Color.blue );  
+      g.drawString( timeString, 50, 50 );  
+   }  
+}  
+
+Q2) Write a Java Program in Applet to demonstrate Keyboard event and Mouse event.
+
+A)
+Mouse Events:
+
+import java.awt.*;
+import java.awt.event.*;
+import java.applet.*;
+/*
+<applet code="Mouse" width=500 height=500>
+</applet>
+*/
+public class Mouse extends Applet
+implements MouseListener,MouseMotionListener
+{
+	int X=0,Y=20;
+	String msg="MouseEvents";
+	public void init()
+	{
+		addMouseListener(this);
+		addMouseMotionListener(this);
+		setBackground(Color.black);
+		setForeground(Color.red);
+	}
+	public void mouseEntered(MouseEvent m)
+	{
+		setBackground(Color.magenta);
+		showStatus("Mouse Entered");
+		repaint();
+	}
+	public void mouseExited(MouseEvent m)
+	{
+		setBackground(Color.black);
+		showStatus("Mouse Exited");
+		repaint();
+	}
+	public void mousePressed(MouseEvent m)
+	{
+		X=10;
+		Y=20;
+		msg="NEC";
+		setBackground(Color.green);
+		repaint();
+	}
+	public void mouseReleased(MouseEvent m)
+	{
+		X=10;
+		Y=20;
+		msg="Engineering";
+		setBackground(Color.blue);
+		repaint();
+	}
+	public void mouseMoved(MouseEvent m)
+	{
+		X=m.getX();
+		Y=m.getY();
+		msg="College";
+		setBackground(Color.white);
+		showStatus("Mouse Moved");
+		repaint();
+	}
+	public void mouseDragged(MouseEvent m)
+	{
+		msg="CSE";
+		setBackground(Color.yellow);
+		showStatus("Mouse Moved"+m.getX()+" "+m.getY());
+		repaint();
+	}
+	public void mouseClicked(MouseEvent m)
+	{
+		msg="Students";
+		setBackground(Color.pink);
+		showStatus("Mouse Clicked");
+		repaint();
+	}
+	public void paint(Graphics g)
+	{
+		g.drawString(msg,X,Y);
+	}
+}
+
+
+
+
+Keyboard events:
+
+import java.awt.*;
+import java.awt.event.*;
+import java.applet.*;
+/*
+<applet code="Key" width=300 height=400>
+</applet>
+*/
+public class Key extends Applet
+implements KeyListener
+{
+	int X=20,Y=30;
+	String msg="KeyEvents--->";
+	public void init()
+	{
+		addKeyListener(this);
+		requestFocus();
+		setBackground(Color.green);
+		setForeground(Color.blue);
+	}
+	public void keyPressed(KeyEvent k)
+	{
+		showStatus("KeyDown");
+		int key=k.getKeyCode();
+		switch(key) 
+		{
+			case KeyEvent.VK_UP:
+				showStatus("Move to Up");
+				break;
+			case KeyEvent.VK_DOWN:
+				showStatus("Move to Down");
+				break;
+			case KeyEvent.VK_LEFT:
+				showStatus("Move to Left");
+				break;
+			case KeyEvent.VK_RIGHT:
+				showStatus("Move to Right");
+				break;
+		}
+		repaint();
+	}
+	public void keyReleased(KeyEvent k)
+	{
+		showStatus("Key Up");
+	}
+	public void keyTyped(KeyEvent k)
+	{
+		msg+=k.getKeyChar();
+		repaint();
+	}
+	public void paint(Graphics g)
+	{
+		g.drawString(msg,X,Y);
+	}
+}
+
